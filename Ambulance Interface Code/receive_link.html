@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accident Alert</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: red;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        #map {
+            height: 500px;
+            width: 90%;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        #info {
+            font-size: 18px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: black; 
+        }
+        #btn-container {
+            margin-top: 10px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background-color: darkgreen;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>🚨 New Accident Alert! 🚨</h1>
+    <p>Route from ambulance to accident location:</p>
+    <div id="map"></div>
+
+    <p id="info">Calculating distance and estimated time...</p>
+
+    <div id="btn-container">
+        <button id="reachedBtn">Reached</button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    
+    <script>
+        let ambulanceLat = 12.972153463195674;
+        let ambulanceLon = 80.04339006435733;
+        let accidentLat = 12.961075935181722;
+        let accidentLon = 80.05221103754286;
+
+        var map = L.map('map').setView([ambulanceLat, ambulanceLon], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([ambulanceLat, ambulanceLon]).addTo(map)
+            .bindPopup("🚑 Ambulance Location").openPopup();
+
+        L.marker([accidentLat, accidentLon]).addTo(map)
+            .bindPopup("❗ Accident Occurred Here!").openPopup();
+
+        L.Routing.control({
+            waypoints: [
+                L.latLng(ambulanceLat, ambulanceLon),
+                L.latLng(accidentLat, accidentLon)
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; 
+        }
+
+        let distance = haversine(ambulanceLat, ambulanceLon, accidentLat, accidentLon).toFixed(2); 
+
+        function calculateTime(speed) {
+            return ((distance / speed) * 60).toFixed(2); 
+        }
+
+        let infoText = `
+            🚗 <span style="color: black;">Distance: ${distance} km</span> <br>
+            🕒 <span style="color: black;">Estimated Time:</span><br>
+            - <span style="color: black;">50 km/h → ${calculateTime(50)} mins</span> <br>
+            - <span style="color: black;">60 km/h → ${calculateTime(60)} mins</span> <br>
+            - <span style="color: black;">70 km/h → ${calculateTime(70)} mins</span> <br>
+            - <span style="color: black;">80 km/h → ${calculateTime(80)} mins</span> <br>
+            - <span style="color: black;">90 km/h → ${calculateTime(90)} mins</span>
+        `;
+
+        document.getElementById("info").innerHTML = infoText;
+
+        document.getElementById('reachedBtn').addEventListener('click', function() {
+            window.location.href = "patient_condition.html";
+        });
+    </script>
+</body>
+</html>
