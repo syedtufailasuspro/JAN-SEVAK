@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Navigation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
+    
+    <style>
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #007bff;
+            animation: fadeIn 1.5s ease-in-out;
+            margin-top: 20px;
+            font-size: 28px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #map {
+            height: 500px;
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            max-width: 400px;
+        }
+
+        .info-card span {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay loop muted playsinline id="bg-video">
+        <source src="ambulance.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <h1>🚑 Navigating to the Nearest Hospital</h1>
+    <div id="map"></div>
+    <div class="info-card">🚗 Estimated Distance: <span id="info">Calculating...</span> km</div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+
+    <script>
+        function getQueryParam(name) {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        let patientLat = 12.961075935181722;
+        let patientLon = 80.05221103754286;
+        let hospitalLat = getQueryParam("lat");
+        let hospitalLon = getQueryParam("lon");
+
+        if (!hospitalLat || !hospitalLon) {
+            alert("No hospital coordinates provided! Using default location.");
+            hospitalLat = 12.979446543121458;
+            hospitalLon = 80.05484478911966;
+        }
+
+        var map = L.map('map').setView([patientLat, patientLon], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([patientLat, patientLon]).addTo(map)
+            .bindPopup("🏥 Patient Location").openPopup();
+
+        L.marker([hospitalLat, hospitalLon]).addTo(map)
+            .bindPopup("🩺 Nearest Hospital").openPopup();
+
+        L.Routing.control({
+            waypoints: [
+                L.latLng(patientLat, patientLon),
+                L.latLng(hospitalLat, hospitalLon)
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        let distance = haversine(patientLat, patientLon, hospitalLat, hospitalLon).toFixed(2);
+        document.getElementById("info").innerHTML = distance;
+    </script>
+</body>
+</html>
