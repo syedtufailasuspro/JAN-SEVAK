@@ -83,3 +83,5 @@ JAN SEVAK is an automated accident response system designed to address inefficie
     
     Communication: Telegram Bot, SMS
 
+Demo Video:
+Watch the JAN SEVAK System in Action - https://drive.google.com/file/d/1NV-WpU1oANQbn7clH4GtkT9E7xNRzqVl/view?usp=sharing
