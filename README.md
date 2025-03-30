@@ -76,10 +76,10 @@ JAN SEVAK is an automated accident response system designed to address inefficie
     Frontend: HTML, CSS, JavaScript
     
     Backend: Python (Flask)
-
-Database: Firebase, MongoDB
-
-Tracking: Google Maps API
-
-Communication: Telegram Bot, SMS
+    
+    Database: Firebase, MongoDB
+    
+    Tracking: Google Maps API
+    
+    Communication: Telegram Bot, SMS
 
