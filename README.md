@@ -3,79 +3,79 @@ JAN SEVAK is an accident response system that Automates the process of Ambulance
 
 JAN SEVAK - Emergency Accident Response System
 
-Problem Statement:
+**Problem Statement:**
 
 Road accidents claim thousands of lives every year due to delays in accident reporting, inefficient ambulance assignment, misallocation of hospitals, and improper routing. In India alone, over 168,000 road accident deaths were reported in 2022, with nearly 40% of critical patients losing their lives due to the lack of timely ambulance services. More than 50% of accident victims do not receive help within the golden hour, significantly reducing their chances of survival.
 
 
-Team Members:
+**Team Members:**
 
-Syed Tufail Ahmed
+1)Syed Tufail Ahmed
 
-Innocent Pious
+2)Innocent Pious
 
-Sabeer Sulaiman Khan G
+3)Sabeer Sulaiman Khan G
 
-Virubash
+4)Virubash
 
 
-Solution Overview:
+**Solution Overview:**
 
 JAN SEVAK is an automated accident response system designed to address inefficiencies in emergency medical services. It ensures quick accident detection, real-time ambulance dispatch, optimized routing, hospital assignment, and patient condition monitoring. The system leverages IoT devices, AI-based risk analysis, and a seamless communication network to optimize response times and save lives.
 
-Key Features:
+**Key Features:**
 
-Accident Detection & Ambulance Assignment:
+  1)Accident Detection & Ambulance Assignment:
 
-Uses smartphone sensors to detect accidents with 90% accuracy.
+    Uses smartphone sensors to detect accidents with 90% accuracy.
 
-Sends an alert message to the user.
+    Sends an alert message to the user.
 
-If no response is received, an ambulance is dispatched automatically.
-
-
-Ambulance Routing & Green Corridor Control:
-
-Determines the optimal route for the ambulance using real-time traffic data.
-
-Controls traffic signals to create a green corridor for the ambulance.
+    If no response is received, an ambulance is dispatched automatically.
 
 
-Hospital Assignment & Patient Management:
+  2)Ambulance Routing & Green Corridor Control:
 
-Assigns the nearest suitable hospital based on patient condition.
+    Determines the optimal route for the ambulance using real-time traffic data.
 
-Updates hospital staff through the JAN SEVAK portal.
-
-
-Real-time Patient Monitoring:
-
-Uses wearable devices to track vitals (heart rate, oxygen levels, etc.).
-
-Sends real-time health data to the hospital.
+    Controls traffic signals to create a green corridor for the ambulance.
 
 
-Tech Stack
+  3)Hospital Assignment & Patient Management:
 
-Hardware:
+    Assigns the nearest suitable hospital based on patient condition.
 
-
-Raspberry Pi
-
-ESP32
-
-Arduino Uno
-
-Relay Modules
-
-LED Indicators
+    Updates hospital staff through the JAN SEVAK portal.
 
 
-Software:
+  4)Real-time Patient Monitoring:
 
-Frontend: HTML, CSS, JavaScript
+    Uses wearable devices to track vitals (heart rate, oxygen levels, etc.).
 
-Backend: Python (Flask)
+    Sends real-time health data to the hospital.
+
+
+**Tech Stack**
+
+  1)Hardware:
+
+
+    Raspberry Pi
+    
+    ESP32
+    
+    Arduino Uno
+    
+    Relay Modules
+    
+    LED Indicators
+
+
+  2)Software:
+
+    Frontend: HTML, CSS, JavaScript
+    
+    Backend: Python (Flask)
 
 Database: Firebase, MongoDB
 
