@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Condition</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .container {
+            background: white;
+            width: 80%;
+            max-width: 450px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .injury-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 18px;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 10px;
+        }
+
+        select, input[type="text"] {
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: darkblue;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <video autoplay loop muted playsinline id="bg-video">
+        <source src="patient condition vid.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <h1>🚑 Update Patient Condition</h1>
+
+    <div class="container">
+        <form onsubmit="sendPatientData(); redirectToHospital(); return false;">
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="skull"> Skull Injury</label>
+                <select name="severity_skull">
+                    <option value="5">5 - Very Severe</option>
+                    <option value="4">4 - Severe</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="2">2 - Mild</option>
+                    <option value="1">1 - Very Mild</option>
+                </select>
+            </div>
+
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="heart"> Heart Attack</label>
+                <select name="severity_heart">
+                    <option value="5">5 - Very Severe</option>
+                    <option value="4">4 - Severe</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="2">2 - Mild</option>
+                    <option value="1">1 - Very Mild</option>
+                </select>
+            </div>
+
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="fracture"> Fracture</label>
+                <select name="severity_fracture">
+                    <option value="5">5 - Very Severe</option>
+                    <option value="4">4 - Severe</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="2">2 - Mild</option>
+                    <option value="1">1 - Very Mild</option>
+                </select>
+            </div>
+
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="broken_bones"> Broken Bones</label>
+                <select name="severity_broken_bones">
+                    <option value="5">5 - Very Severe</option>
+                    <option value="4">4 - Severe</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="2">2 - Mild</option>
+                    <option value="1">1 - Very Mild</option>
+                </select>
+            </div>
+
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="internal_damage"> Internal Organ Damage</label>
+                <select name="severity_internal_damage">
+                    <option value="5">5 - Very Severe</option>
+                    <option value="4">4 - Severe</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="2">2 - Mild</option>
+                    <option value="1">1 - Very Mild</option>
+                </select>
+            </div>
+
+            <div class="injury-group">
+                <label><input type="checkbox" name="injury" value="other"> Other</label>
+                <input type="text" name="other_injury" placeholder="Specify other injury" style="flex: 1; padding: 5px; margin-left: 10px;">
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function sendPatientData() {
+            let selectedInjury = document.querySelectorAll('input[name="injury"]:checked');
+            
+            if (selectedInjury.length === 0) {
+                alert("Please select an injury!");
+                return;
+            }
+
+            let patientData = [];
+
+            selectedInjury.forEach(injury => {
+                let severitySelect = document.querySelector(`select[name="severity_${injury.value}"]`);
+                let severityValue = severitySelect ? severitySelect.value : "1";
+                patientData.push({ injury: injury.value, severity: severityValue });
+            });
+
+            fetch("http://127.0.0.1:5000/send_telegram_alert", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ injuries: patientData })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error("Error:", error));
+        }
+        
+        function redirectToHospital() {
+            let injuryHospitalMap = {
+                "skull": {
+                    5: { lat: 12.980294693914972, lon: 80.05381012957693 },
+                    4: { lat: 12.978910, lon: 80.055610 },
+                    3: { lat: 12.976500, lon: 80.052200 },
+                    2: { lat: 12.970100, lon: 80.050100 },
+                    1: { lat: 12.965000, lon: 80.048000 }
+                },
+                "heart": {
+                    5: { lat: 12.955993346488029, lon: 80.04357373129639 },
+                    4: { lat: 12.954200, lon: 80.042500 },
+                    3: { lat: 12.950800, lon: 80.040000 },
+                    2: { lat: 12.948000, lon: 80.038500 },
+                    1: { lat: 12.945600, lon: 80.037200 }
+                }
+            };
+
+            let selectedInjury = document.querySelectorAll('input[name="injury"]:checked');
+            
+            if (selectedInjury.length === 0) {
+                alert("Please select an injury!");
+                return;
+            }
+
+            let highestSeverity = 1;
+            let selectedHospital = null;
+
+            selectedInjury.forEach(injury => {
+                let severitySelect = document.querySelector(`select[name="severity_${injury.value}"]`);
+                let severityValue = severitySelect ? severitySelect.value : 1;
+
+                if (injuryHospitalMap[injury.value] && injuryHospitalMap[injury.value][severityValue]) {
+                    if (severityValue > highestSeverity) {
+                        highestSeverity = severityValue;
+                        selectedHospital = injuryHospitalMap[injury.value][severityValue];
+                    }
+                }
+            });
+
+            if (selectedHospital) {
+                let url = `hospital_navigation.html?lat=${selectedHospital.lat}&lon=${selectedHospital.lon}`;
+                window.location.href = url;
+            }
+        }
+    
+
+        
+    </script>
+</body>
+</html>
