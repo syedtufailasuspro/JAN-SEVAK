@@ -88,28 +88,45 @@ Watch the JAN SEVAK System in Action - https://drive.google.com/file/d/1NV-WpU1o
 
 
 Setup & Run Instructions:
+
 Follow the steps below to download and run the JAN SEVAK ambulance interface.
 
 1️⃣ Download the Files
+
 Clone or download the project files from the repository. If using Git, run:
+
 git clone <your-repository-link>
+
 Or manually download and extract the files.
 
+
 2️⃣ Open Terminal & Navigate to Project Folder
+
 Use the terminal (Command Prompt, PowerShell, or Linux/macOS terminal) and navigate to the project directory:
+
 cd <project-folder>
 
+
 3️⃣ Install Dependencies
+
 Ensure Python is installed, then install the required packages:
+
 pip install -r requirements.txt
 
+
 4️⃣ Run the Backend (Flask App)
+
 Start the backend by running:
+
 python app.py
 
 If running on Linux/macOS, you may use:
+
 python3 app.py
 
+
 5️⃣ Open the Web Interface
+
 Once the server is running, open receive.html in a web browser (Chrome, Edge, Firefox, etc.).
+
 Open manually by double-clicking receive.html.
