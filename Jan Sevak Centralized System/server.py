@@ -106,9 +106,22 @@ def close_case():
     
     # Move from active_cases to closed_cases
     cursor.execute(
-        "INSERT INTO closed_cases (case_id, accident_time, close_time, location, patient_condition, hospital) "
-        "SELECT case_id, accident_time, NOW(), location, patient_condition, hospital_assigned FROM active_cases WHERE status='Active' ORDER BY accident_time DESC LIMIT 1"
-    )
+    """
+    INSERT INTO closed_cases (case_id, accident_time, close_time, location, patient_condition, hospital)
+    SELECT 
+        COALESCE((SELECT MAX(case_id) FROM closed_cases), 0) + 1 AS new_case_id,
+        accident_time,
+        NOW(),
+        location,
+        patient_condition,
+        hospital_assigned
+    FROM active_cases
+    WHERE status='Active'
+    ORDER BY accident_time DESC
+    LIMIT 1
+    """
+)
+
     cursor.execute("DELETE FROM active_cases WHERE status='Active' ORDER BY accident_time DESC LIMIT 1")
     
     db.commit()
@@ -116,5 +129,91 @@ def close_case():
 
     return jsonify({"message": "Case closed and logged!"})
 
+#statistics
+@app.route("/get-accident-statistics")
+def get_accident_statistics():
+    db = db_connection()
+    cursor = db.cursor(dictionary=True)
+    
+    try:
+        # Get accidents by hour of day (including hours with 0 accidents)
+        cursor.execute("""
+            SELECT 
+                HOUR(accident_time) as hour,
+                COUNT(*) as count
+            FROM closed_cases
+            GROUP BY hour
+            ORDER BY hour
+        """)
+        hourly_data = cursor.fetchall()
+        
+        # If no data exists, return sample data for testing
+        if not hourly_data:
+            hourly_data = [
+                {"hour": 8, "count": 3},
+                {"hour": 12, "count": 5},
+                {"hour": 17, "count": 7},
+                {"hour": 20, "count": 2}
+            ]
+        
+        return jsonify({
+            'hourly': hourly_data,
+            'status': 'success'
+        })
+        
+    except Exception as e:
+        print(f"Error getting statistics: {str(e)}")
+        return jsonify({
+            'hourly': [
+                {"hour": 8, "count": 3},
+                {"hour": 12, "count": 5},
+                {"hour": 17, "count": 7},
+                {"hour": 20, "count": 2}
+            ],
+            'status': 'error',
+            'message': str(e)
+        })
+    finally:
+        db.close()
+
+        
+@app.route("/get-accident-hotspots")
+def get_accident_hotspots():
+    db = db_connection()
+    cursor = db.cursor(dictionary=True)
+    
+    try:
+        # More robust location parsing
+        cursor.execute("""
+            SELECT 
+                TRIM(SUBSTRING_INDEX(location, ',', 1)) as lat,
+                TRIM(SUBSTRING_INDEX(location, ',', -1)) as lng,
+                COUNT(*) as count
+            FROM closed_cases
+            WHERE location LIKE '%,%'
+            GROUP BY lat, lng
+            HAVING COUNT(*) > 0
+        """)
+        hotspots = cursor.fetchall()
+        
+        # Validate coordinates
+        valid_hotspots = []
+        for hotspot in hotspots:
+            try:
+                lat = float(hotspot['lat'])
+                lng = float(hotspot['lng'])
+                if -90 <= lat <= 90 and -180 <= lng <= 180:
+                    valid_hotspots.append(hotspot)
+            except ValueError:
+                continue
+                
+        return jsonify(valid_hotspots)
+        
+    except Exception as e:
+        print(f"Error getting hotspots: {str(e)}")
+        return jsonify([])
+    finally:
+        db.close()
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=2600)
