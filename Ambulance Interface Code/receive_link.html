@@ -7,63 +7,206 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f9fa;
+        :root {
+            --primary-color: #e63946;
+            --secondary-color: #1d3557;
+            --accent-color: #457b9d;
+            --background-color: #f1faee;
+            --success-color: #2a9d8f;
+            --success-hover: #1e7168;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         h1 {
-            color: red;
-            animation: blink 1s infinite;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
         }
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); }
         }
+
+        .alert-icon {
+            font-size: 2.8rem;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
         #map {
             height: 500px;
-            width: 90%;
-            margin: 20px auto;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
         }
+
+        .info-panel {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+        }
+
         #info {
-            font-size: 18px;
-            margin-top: 10px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .info-title {
             font-weight: bold;
-            color: black; 
+            color: var(--accent-color);
+            margin-right: 8px;
         }
-        #btn-container {
-            margin-top: 10px;
+
+        .time-estimates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
+
+        .time-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .speed {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .time {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .action-panel {
+            text-align: center;
+            margin-top: 20px;
+        }
+
         button {
-            padding: 12px 20px;
-            font-size: 18px;
-            background-color: green;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: var(--success-color);
             color: white;
             border: none;
+            border-radius: 50px;
             cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s ease;
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s ease;
         }
+
         button:hover {
-            background-color: darkgreen;
-            transform: scale(1.1);
+            background-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #map {
+                height: 400px;
+            }
+            
+            .time-estimates {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time-estimates {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>🚨 New Accident Alert! 🚨</h1>
-    <p>Route from ambulance to accident location:</p>
-    <div id="map"></div>
+    <div class="container">
+        <header>
+            <h1><span class="alert-icon">🚨</span> Accident Alert <span class="alert-icon">🚨</span></h1>
+            <p class="subtitle">Emergency response navigation system</p>
+        </header>
+        
+        <p class="subtitle">Route from ambulance to accident location:</p>
+        <div id="map"></div>
 
-    <p id="info">Calculating distance and estimated time...</p>
+        <div class="info-panel">
+            <div id="info">Calculating distance and estimated time...</div>
+        </div>
 
-    <div id="btn-container">
-        <button id="reachedBtn">Reached</button>
+        <div class="action-panel">
+            <button id="reachedBtn"><span class="icon">✓</span> Reached Location</button>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -80,18 +223,41 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        L.marker([ambulanceLat, ambulanceLon]).addTo(map)
-            .bindPopup("🚑 Ambulance Location").openPopup();
+        // Custom icons
+        var ambulanceIcon = L.divIcon({
+            html: '<div style="font-size: 24px;">🚑</div>',
+            className: 'custom-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
 
-        L.marker([accidentLat, accidentLon]).addTo(map)
-            .bindPopup("❗ Accident Occurred Here!").openPopup();
+        var accidentIcon = L.divIcon({
+            html: '<div style="font-size: 24px;">⚠️</div>',
+            className: 'custom-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
 
-        L.Routing.control({
+        L.marker([ambulanceLat, ambulanceLon], {icon: ambulanceIcon}).addTo(map)
+            .bindPopup("<b>🚑 Ambulance Location</b>").openPopup();
+
+        L.marker([accidentLat, accidentLon], {icon: accidentIcon}).addTo(map)
+            .bindPopup("<b>⚠️ Accident Location</b>").openPopup();
+
+        // Add routing with custom style
+        var routingControl = L.Routing.control({
             waypoints: [
                 L.latLng(ambulanceLat, ambulanceLon),
                 L.latLng(accidentLat, accidentLon)
             ],
-            routeWhileDragging: true
+            routeWhileDragging: true,
+            lineOptions: {
+                styles: [
+                    {color: '#e63946', opacity: 0.8, weight: 6},
+                    {color: 'white', opacity: 0.3, weight: 2}
+                ]
+            },
+            createMarker: function() { return null; } // Hide default markers
         }).addTo(map);
 
         function haversine(lat1, lon1, lat2, lon2) {
@@ -108,20 +274,40 @@
         let distance = haversine(ambulanceLat, ambulanceLon, accidentLat, accidentLon).toFixed(2); 
 
         function calculateTime(speed) {
-            return ((distance / speed) * 60).toFixed(2); 
+            return ((distance / speed) * 60).toFixed(1); 
         }
 
-        let infoText = `
-            🚗 <span style="color: black;">Distance: ${distance} km</span> <br>
-            🕒 <span style="color: black;">Estimated Time:</span><br>
-            - <span style="color: black;">50 km/h → ${calculateTime(50)} mins</span> <br>
-            - <span style="color: black;">60 km/h → ${calculateTime(60)} mins</span> <br>
-            - <span style="color: black;">70 km/h → ${calculateTime(70)} mins</span> <br>
-            - <span style="color: black;">80 km/h → ${calculateTime(80)} mins</span> <br>
-            - <span style="color: black;">90 km/h → ${calculateTime(90)} mins</span>
+        // Create HTML for the info panel
+        let infoHTML = `
+            <div>
+                <p><span class="info-title">🚗 Distance:</span> ${distance} km</p>
+                <p><span class="info-title">🕒 Estimated Arrival Time:</span></p>
+                <div class="time-estimates">
+                    <div class="time-item">
+                        <div class="speed">50 km/h</div>
+                        <div class="time">${calculateTime(50)} mins</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="speed">60 km/h</div>
+                        <div class="time">${calculateTime(60)} mins</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="speed">70 km/h</div>
+                        <div class="time">${calculateTime(70)} mins</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="speed">80 km/h</div>
+                        <div class="time">${calculateTime(80)} mins</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="speed">90 km/h</div>
+                        <div class="time">${calculateTime(90)} mins</div>
+                    </div>
+                </div>
+            </div>
         `;
 
-        document.getElementById("info").innerHTML = infoText;
+        document.getElementById("info").innerHTML = infoHTML;
 
         document.getElementById('reachedBtn').addEventListener('click', function() {
             window.location.href = "patient_condition.html";
