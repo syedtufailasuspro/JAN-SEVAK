@@ -4,7 +4,7 @@ from firebase_admin import credentials, db
 import gpiod  # GPIO access for Raspberry Pi
 import time
 
-# Firebase Setup
+# Firebase Setup imp
 cred = credentials.Certificate("firebase_config.json")  # Update with your Firebase credentials file
 firebase_admin.initialize_app(cred, {"databaseURL": "https://smart-home-automation-cd398-default-rtdb.asia-southeast1.firebasedatabase.app/"})
 
