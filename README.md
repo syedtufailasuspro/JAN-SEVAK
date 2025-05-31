@@ -48,7 +48,7 @@
 
 ## 🛠️ Tech Stack
 **Hardware**  
-[Raspberry Pi] • [ESP32] • [Arduino Uno] • [Relay Modules] • [Medical Sensors]
+[Raspberry Pi] • [ESP32] • [Arduino Uno] • [Relay Modules] • [Pulse Sensor]
 
 **Software**  
 `Python (Flask)` • `Firebase` • `MongoDB` • `Google Maps API` • `Telegram Bot API`
